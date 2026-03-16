@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>名刺デモ — 株式会社ホワイトラベル</title>
+  <style>
+    /* ===== Reset & Base ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Helvetica Neue', 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif;
+      background: #e8edf2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 60px 20px;
+      gap: 60px;
+    }
+
+    .page-title {
+      font-size: 11px;
+      color: #999;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      text-align: center;
+    }
+
+    /* ===== Card Set ===== */
+    .card-set {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 48px;
+    }
+
+    .card-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .side-label {
+      font-size: 10px;
+      color: #bbb;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    /* ===== Business Card Base ===== */
+    /* Standard Japanese biz card: 91mm × 55mm → scale ×3.78 for screen ≈ 344px × 208px */
+    .card {
+      width: 344px;
+      height: 208px;
+      border-radius: 8px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.20), 0 2px 8px rgba(0,0,0,0.10);
+    }
+
+    /* ===================== FRONT ===================== */
+    .card-front {
+      background: #0d0d0d;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 20px 22px 16px 22px;
+    }
+
+    /* Teal accent bar */
+    .card-front::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3.5px;
+      background: linear-gradient(90deg, #6acfc9 0%, #4ab8b0 55%, rgba(74,184,176,0) 100%);
+    }
+
+    /* Subtle grid texture */
+    .card-front::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(106,207,201,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(106,207,201,0.03) 1px, transparent 1px);
+      background-size: 20px 20px;
+      pointer-events: none;
+    }
+
+    .front-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .company-block {}
+
+    .company-en {
+      font-size: 9px;
+      color: #6acfc9;
+      letter-spacing: 0.22em;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .company-ja {
+      font-size: 7.5px;
+      color: #666;
+      letter-spacing: 0.1em;
+      margin-top: 2px;
+    }
+
+    .front-center {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .name-ja {
+      font-size: 22px;
+      color: #ffffff;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      line-height: 1;
+    }
+
+    .name-en {
+      font-size: 9px;
+      color: #777;
+      letter-spacing: 0.18em;
+      margin-top: 2px;
+    }
+
+    .role-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 5px;
+    }
+
+    .role-bar {
+      width: 2.5px;
+      height: 12px;
+      background: #6acfc9;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    .role-text {
+      font-size: 8px;
+      color: #6acfc9;
+      letter-spacing: 0.1em;
+      font-weight: 500;
+    }
+
+    .front-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+
+    .contact-list {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .contact-item {
+      font-size: 7.5px;
+      color: #bbb;
+      letter-spacing: 0.06em;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .contact-item .icon {
+      color: #6acfc9;
+      font-size: 8px;
+      width: 10px;
+      text-align: center;
+    }
+
+    .contact-item.muted { color: #555; }
+
+    .sns-stack {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 3px;
+    }
+
+    .sns-pill {
+      font-size: 6.5px;
+      color: #6acfc9;
+      border: 1px solid #2a2a2a;
+      background: #111;
+      border-radius: 3px;
+      padding: 2px 6px;
+      letter-spacing: 0.08em;
+    }
+
+    /* ===================== BACK ===================== */
+    .card-back {
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 18px 22px 14px 22px;
+    }
+
+    .card-back::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3.5px;
+      background: linear-gradient(90deg, #6acfc9 0%, #4ab8b0 55%, rgba(74,184,176,0) 100%);
+    }
+
+    .back-header {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .back-headline {
+      font-size: 11px;
+      font-weight: 800;
+      color: #0d0d0d;
+      letter-spacing: 0.04em;
+      line-height: 1.45;
+    }
+
+    .back-headline .accent { color: #6acfc9; }
+
+    .back-sub {
+      font-size: 7.5px;
+      color: #666;
+      letter-spacing: 0.04em;
+      line-height: 1.65;
+    }
+
+    .divider {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, #e0e0e0, transparent);
+    }
+
+    .back-middle {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .section-micro {
+      font-size: 6.5px;
+      color: #aaa;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .platform-row {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+
+    .pb {
+      font-size: 6.5px;
+      font-weight: 700;
+      color: #fff;
+      border-radius: 3px;
+      padding: 2.5px 6px;
+      letter-spacing: 0.06em;
+    }
+    .pb-x       { background: #1a1a1a; }
+    .pb-threads { background: #111; }
+    .pb-ig      { background: linear-gradient(135deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); }
+    .pb-tiktok  { background: #010101; border: 1px solid #333; }
+    .pb-youtube { background: #ff0000; }
+
+    .launch-info {
+      font-size: 7px;
+      color: #888;
+      letter-spacing: 0.04em;
+      line-height: 1.6;
+    }
+
+    .launch-info strong { color: #0d0d0d; font-weight: 700; }
+    .launch-info .hi    { color: #6acfc9; font-weight: 700; }
+
+    .back-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+
+    .cta-block {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .cta-micro {
+      font-size: 6.5px;
+      color: #bbb;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .cta-email {
+      font-size: 8px;
+      font-weight: 700;
+      color: #0d0d0d;
+      letter-spacing: 0.05em;
+    }
+
+    .monitor-badge {
+      font-size: 7px;
+      font-weight: 700;
+      color: #fff;
+      background: #6acfc9;
+      border-radius: 4px;
+      padding: 4px 9px;
+      letter-spacing: 0.1em;
+      white-space: nowrap;
+      box-shadow: 0 2px 8px rgba(106,207,201,0.4);
+    }
+
+  </style>
+</head>
+<body>
+
+  <p class="page-title">Business Card Demo — 株式会社ホワイトラベル</p>
+
+  <div class="card-set">
+
+    <!-- ===== FRONT ===== -->
+    <div class="card-wrap">
+      <p class="side-label">Front</p>
+      <div class="card card-front">
+
+        <div class="front-header">
+          <div class="company-block">
+            <div class="company-en">White Label Inc.</div>
+            <div class="company-ja">株式会社ホワイトラベル</div>
+          </div>
+        </div>
+
+        <div class="front-center">
+          <div class="name-ja">山田 太郎</div>
+          <div class="name-en">Taro Yamada</div>
+          <div class="role-tag">
+            <div class="role-bar"></div>
+            <div class="role-text">代表取締役 / SNS SaaS事業 責任者</div>
+          </div>
+        </div>
+
+        <div class="front-footer">
+          <div class="contact-list">
+            <div class="contact-item">
+              <span class="icon">✉</span>
+              hello@whitelabel.co.jp
+            </div>
+            <div class="contact-item">
+              <span class="icon">🌐</span>
+              whitelabel.co.jp
+            </div>
+            <div class="contact-item muted">
+              <span class="icon">📍</span>
+              〒000-0000 東京都○○区○○ 0-0-0
+            </div>
+          </div>
+          <div class="sns-stack">
+            <span class="sns-pill">𝕏 @handle</span>
+            <span class="sns-pill">TikTok @handle</span>
+            <span class="sns-pill">IG @handle</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ===== BACK ===== -->
+    <div class="card-wrap">
+      <p class="side-label">Back</p>
+      <div class="card card-back">
+
+        <div class="back-header">
+          <div class="back-headline">
+            SNSマーケター・事業者へ<br>
+            <span class="accent">SaaS開発を、無料で。</span>
+          </div>
+          <div class="back-sub">
+            X / Threads / Instagram / TikTok / YouTube 向け SaaS を<br>
+            0円スキームで共同開発・提供するパートナーを募集中
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="back-middle">
+          <div class="section-micro">対応プラットフォーム（2025年内）</div>
+          <div class="platform-row">
+            <span class="pb pb-x">𝕏</span>
+            <span class="pb pb-threads">Threads</span>
+            <span class="pb pb-ig">Instagram</span>
+            <span class="pb pb-tiktok">TikTok</span>
+            <span class="pb pb-youtube">YouTube</span>
+          </div>
+          <div class="launch-info">
+            <strong>5月 正式ローンチ</strong>（TikTok / YouTube 先行）&nbsp;
+            <span class="hi">▶ 現在モニター募集中</span>
+          </div>
+        </div>
+
+        <div class="back-footer">
+          <div class="cta-block">
+            <div class="cta-micro">協業・お問い合わせ</div>
+            <div class="cta-email">hello@whitelabel.co.jp</div>
+          </div>
+          <div class="monitor-badge">モニター募集中</div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>
